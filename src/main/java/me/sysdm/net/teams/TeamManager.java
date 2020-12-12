@@ -6,6 +6,7 @@ import dev.morphia.converters.UUIDConverter;
 import dev.morphia.query.Query;
 import dev.morphia.query.UpdateOperations;
 import me.sysdm.net.mongo.MongoManager;
+import me.sysdm.net.teams.players.PlayerManager;
 import me.sysdm.net.teams.players.TeamPlayer;
 
 import java.util.UUID;
@@ -16,17 +17,16 @@ public class TeamManager {
     private static final Datastore datastore = MongoManager.getDatastore();
 
     public static Team getTeam(UUID playerUUID) {
+        TeamPlayer teamPlayer = PlayerManager.getPlayer(playerUUID);
         for(Team team : datastore.createQuery(Team.class)) {
-            if(team.getMembers().stream().anyMatch(teamPlayer -> teamPlayer.getUUID() == playerUUID)) return team;
-            else if(team.getOwner().getUUID() == playerUUID) return team;
-            else if(team.getCoOwner().getUUID() == playerUUID) return team;
+            if(team.isInTeam(teamPlayer)) return team;
         }
         return null;
     }
 
     public static Messenger getMessenger(TeamPlayer teamPlayer) {
-        if(datastore.createQuery(Messenger.class).filter("UUID==", teamPlayer.getUUID()).get() == null) return new Messenger(teamPlayer);
-        return datastore.createQuery(Messenger.class).filter("UUID==", teamPlayer.getUUID()).get();
+        if(datastore.createQuery(Messenger.class).filter("uuid ==", teamPlayer.getUuid()).get() == null) return new Messenger(teamPlayer);
+        return datastore.createQuery(Messenger.class).filter("uuid ==", teamPlayer.getUuid()).get();
     }
 
     public static Team getTeam(String teamName) {
@@ -34,6 +34,18 @@ public class TeamManager {
             if(teamName.equalsIgnoreCase(team.getTeamName())) return team;
         }
         return null;
+    }
+
+    public static void save(Team team) {
+        datastore.save(team);
+    }
+
+    public static void save(TeamPlayer teamPlayer) {
+        datastore.save(teamPlayer);
+    }
+
+    public static void save(Messenger messenger) {
+        datastore.save(messenger);
     }
 
     public static void removeTeam(Team team) {

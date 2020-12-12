@@ -46,33 +46,61 @@ public class TeamCommand {
                     int length = c.args().size();
                     if(length == 0) {
                         c.reply(help());
-                    }
-                    if(!teamPlayer.isInTeam()) {
-                        c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                        return;
                     }
                     if(length == 1) {
                         switch (c.rawArg(0)) {
                             case "sethome":
-                                if(teamPlayer.getPosition() == TeamPosition.MEMBER) c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.CO_OWNER.name()));
+                                if(!teamPlayer.isInTeam()) {
+                                    c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                    return;
+                                }
+                                if(teamPlayer.getPosition() == TeamPosition.MEMBER) {
+                                    c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.CO_OWNER.name()));
+                                    return;
+                                }
                                 teamPlayer.getTeam().setHomeLocation(player.getLocation());
                                 break;
                             case "home":
-                                if(teamPlayer.getTeam().getHomeLocation() == null) c.reply("&c&l[!] Your CoOwner or leader hasn't set an home location!");
+                                if(!teamPlayer.isInTeam()) {
+                                    c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                    return;
+                                }
+                                if(teamPlayer.getTeam().getHomeLocation() == null) {
+                                    c.reply("&c&l[!] Your CoOwner or leader hasn't set an home location!");
+                                    return;
+                                }
                                 player.teleport(teamPlayer.getTeam().getHomeLocation());
                                 break;
                             case "disband":
-                                if(teamPlayer.getPosition() == TeamPosition.MEMBER || teamPlayer.getPosition() == TeamPosition.CO_OWNER) c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.OWNER.name()));
+                                if(!teamPlayer.isInTeam()) {
+                                    c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                }
+                                if(teamPlayer.getPosition() == TeamPosition.MEMBER || teamPlayer.getPosition() == TeamPosition.CO_OWNER) {
+                                    c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.OWNER.name()));
+                                    return;
+                                }
                                 TeamManager.removeTeam(teamPlayer.getTeam());
                                 c.reply(LangMessages.SUCCESSFULLY_DISBANDED_TEAM.getMessage());
-                                break;
+                                return;
                             case "leave":
+                                if(!teamPlayer.isInTeam()) {
+                                    c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                    return;
+                                }
                                 if(teamPlayer.getPosition() == TeamPosition.MEMBER) teamPlayer.getTeam().getMembers().remove(teamPlayer);
                                 if(teamPlayer.getPosition() == TeamPosition.CO_OWNER) teamPlayer.getTeam().setCoOwner(null);
-                                if(teamPlayer.getPosition() == TeamPosition.OWNER) c.reply(LangMessages.OWNER_CANNOT_LEAVE_TEAM.getMessage());
+                                if(teamPlayer.getPosition() == TeamPosition.OWNER) {
+                                    c.reply(LangMessages.OWNER_CANNOT_LEAVE_TEAM.getMessage());
+                                    return;
+                                }
                                 c.reply(LangMessages.SUCCESSFULLY_LEFT_TEAM.getMessage());
-                                break;
+                                return;
                             case "who":
-                                if(!teamPlayer.isInTeam()) c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                if(!teamPlayer.isInTeam()) {
+                                    c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                    return;
+                                }
                                 String ownerName = teamPlayer.getTeam().getOwner().getPlayer().getName();
                                 String coOwnerName = teamPlayer.getTeam().getCoOwner().getPlayer().getName();
                                 String teamName = teamPlayer.getTeam().getTeamName();
@@ -88,16 +116,26 @@ public class TeamCommand {
                     if(length == 2) {
                         switch (c.rawArg(0)) {
                             case "join":
-                                if(TeamManager.getTeam(c.rawArg(1)) == null) c.reply(LangMessages.TEAM_DOESNT_EXIST.getMessage());
+                                if(TeamManager.getTeam(c.rawArg(1)) == null) {
+                                    c.reply(LangMessages.TEAM_DOESNT_EXIST.getMessage());
+                                    return;
+                                }
                                 teamPlayer.getMessenger().sendRequest(TeamManager.getTeam(c.rawArg(1)).getOwner().getMessenger());
                                 teamPlayer.getMessenger().sendRequest(TeamManager.getTeam(c.rawArg(1)).getCoOwner().getMessenger());
                                 c.reply(LangMessages.SUCCESSFULLY_SENT_REQUEST.getMessage().replace("{team}", teamPlayer.getTeam().getTeamName()));
-                                break;
+                                return;
                             case "invite":
-                                if(!teamPlayer.isInTeam()) c.reply(LangMessages.NOT_IN_TEAM.getMessage());
-                                if(Bukkit.getPlayerExact(c.rawArg(2)) == null) c.reply(LangMessages.PLAYER_DOES_NOT_EXIST.getMessage());
+                                if(!teamPlayer.isInTeam()) {
+                                    c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                    return;
+                                }
+                                if(Bukkit.getPlayerExact(c.rawArg(2)) == null) {
+                                    c.reply(LangMessages.PLAYER_DOES_NOT_EXIST.getMessage());
+                                    return;
+                                }
                                 teamPlayer.getMessenger().sendInvite(PlayerManager.getPlayer(Bukkit.getPlayerExact(c.rawArg(2)).getUniqueId()).getMessenger());
                                 c.reply(LangMessages.SUCCESSFULLY_SENT_INVITE.getMessage().replace("{team}", teamPlayer.getTeam().getTeamName()));
+                                return;
                             case "create":
                                 if(teamPlayer.isInTeam()) {
                                     if(teamPlayer.getPosition() == TeamPosition.OWNER) {
@@ -108,18 +146,37 @@ public class TeamCommand {
                                     }
                                     teamPlayer.getTeam().getMembers().remove(teamPlayer);
                                 }
-                                new Team(teamPlayer, c.rawArg(1), ObjectId.get());
-                                c.reply(LangMessages.SUCCESSFULLY_CREATED_TEAM.getMessage().replace("{team}", teamPlayer.getTeam().getTeamName()));
-                                break;
+                                Team playerTeam = new Team(teamPlayer, c.rawArg(1), ObjectId.get());
+                                c.reply(LangMessages.SUCCESSFULLY_CREATED_TEAM.getMessage().replace("{team}", playerTeam.getTeamName()));
+                                return;
                             case "kick":
-                                if(teamPlayer.getPosition() == TeamPosition.MEMBER) c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.CO_OWNER.name()));
-                                if(Bukkit.getPlayerExact(c.rawArg(2)) == null) c.reply(LangMessages.PLAYER_NOT_IN_TEAM.getMessage());
-                                if(!teamPlayer.getTeam().getMembers().contains(PlayerManager.getPlayer(Bukkit.getPlayerExact(c.rawArg(2)).getUniqueId()))) c.reply(LangMessages.PLAYER_NOT_IN_TEAM.getMessage());
+                                if(!teamPlayer.isInTeam()) {
+                                    c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                }
+                                if(teamPlayer.getPosition() == TeamPosition.MEMBER) {
+                                    c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.CO_OWNER.name()));
+                                    return;
+                                }
+                                if(Bukkit.getPlayerExact(c.rawArg(2)) == null) {
+                                    c.reply(LangMessages.PLAYER_NOT_IN_TEAM.getMessage());
+                                    return;
+                                }
+                                if(!teamPlayer.getTeam().getMembers().contains(PlayerManager.getPlayer(Bukkit.getPlayerExact(c.rawArg(2)).getUniqueId()))) {
+                                    c.reply(LangMessages.PLAYER_NOT_IN_TEAM.getMessage());
+                                    return;
+                                }
                                 teamPlayer.getTeam().getMembers().remove(PlayerManager.getPlayer(Bukkit.getPlayerExact(c.rawArg(2)).getUniqueId()));
-                                break;
+                                return;
                             case "who":
+                                if(!teamPlayer.isInTeam()) {
+                                    c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                    return;
+                                }
                                 Team team = TeamManager.getTeam(c.rawArg(1));
-                                if(team == null) c.reply(LangMessages.TEAM_DOESNT_EXIST.getMessage());
+                                if(team == null) {
+                                    c.reply(LangMessages.TEAM_DOESNT_EXIST.getMessage());
+                                    return;
+                                }
                                 String ownerName = team.getOwner().getPlayer().getName();
                                 String coOwnerName = team.getCoOwner().getPlayer().getName();
                                 String teamName = team.getTeamName();
@@ -129,31 +186,55 @@ public class TeamCommand {
                                 }
                                 player.sendMessage(Text.colorize("&6&l----&d&lTeams&6&l----&r\n" +
                                         ChatColor.BOLD + ChatColor.AQUA + teamName + "\n&6Owner: " + ownerName + "\n&6CoOwner: " + coOwnerName + "\nMembers:\n" + members.toString()));
+                                return;
                             case "rename":
-                                if(teamPlayer.getPosition() == TeamPosition.MEMBER) c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.CO_OWNER.name()));
+                                if(!teamPlayer.isInTeam()) {
+                                    c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                                    return;
+                                }
+                                if(teamPlayer.getPosition() == TeamPosition.MEMBER) {
+                                    c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.CO_OWNER.name()));
+                                    return;
+                                }
                                 teamPlayer.getTeam().setTeamName(c.rawArg(1));
                                 c.reply(LangMessages.SUCCESSFULLY_RENAMED_TEAM.getMessage().replace("{team}", teamPlayer.getTeam().getTeamName()));
-                            default: c.reply(help());
+                                return;
+                                default: c.reply(help());
                         }
                     }
                     if(length == 3) {
                         if ("set".equals(c.rawArg(0))) {
+                            if(!teamPlayer.isInTeam()) {
+                                c.reply(LangMessages.NOT_IN_TEAM.getMessage());
+                            }
                             if(teamPlayer.getPosition() == TeamPosition.MEMBER) c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.CO_OWNER.name()));
                             if(Bukkit.getPlayerExact(c.rawArg(2)) == null) c.reply(LangMessages.PLAYER_NOT_IN_TEAM.getMessage());
                             if(!teamPlayer.getTeam().getMembers().contains(PlayerManager.getPlayer(Bukkit.getPlayerExact(c.rawArg(2)).getUniqueId()))) c.reply(LangMessages.PLAYER_NOT_IN_TEAM.getMessage());
                             Player p = Bukkit.getPlayerExact(c.rawArg(2));
                             TeamPlayer tp = PlayerManager.getPlayer(p.getUniqueId());
-                            if(tp.getTeam().getOwner().getUUID() == tp.getUUID()) c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.OWNER.name()));
+                            if(tp.getPosition() == TeamPosition.CO_OWNER) c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.OWNER.name()));
                             switch (c.rawArg(2)) {
                                 case "MEMBER":
-                                    if(tp.getPosition() == TeamPosition.MEMBER) c.reply(LangMessages.PLAYER_ALREADY_IN_POSITION.getMessage().replace("{position}", tp.getPosition().name()));
+                                    if(tp.getPosition() == TeamPosition.MEMBER) {
+                                        c.reply(LangMessages.PLAYER_ALREADY_IN_POSITION.getMessage().replace("{position}", tp.getPosition().name()));
+                                        return;
+                                    }
                                     tp.setPosition(TeamPosition.MEMBER);
                                 case "CO_OWNER":
-                                    if(tp.getPosition() == TeamPosition.CO_OWNER) c.reply(LangMessages.PLAYER_ALREADY_IN_POSITION.getMessage().replace("{position}", tp.getPosition().name()));
+                                    if(tp.getPosition() == TeamPosition.CO_OWNER) {
+                                        c.reply(LangMessages.PLAYER_ALREADY_IN_POSITION.getMessage().replace("{position}", tp.getPosition().name()));
+                                        return;
+                                    }
                                     tp.setPosition(TeamPosition.CO_OWNER);
                                 case "OWNER":
-                                    if(teamPlayer.getPosition() == TeamPosition.CO_OWNER) c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.OWNER.name()));
-                                    if(tp.getPosition() == TeamPosition.OWNER) c.reply(LangMessages.PLAYER_ALREADY_IN_POSITION.getMessage().replace("{position}", tp.getPosition().name()));
+                                    if(teamPlayer.getPosition() == TeamPosition.CO_OWNER) {
+                                        c.reply(LangMessages.POSITION_TOO_LOW.getMessage().replace("{position}", TeamPosition.OWNER.name()));
+                                        return;
+                                    }
+                                    if(tp.getPosition() == TeamPosition.OWNER) {
+                                        c.reply(LangMessages.PLAYER_ALREADY_IN_POSITION.getMessage().replace("{position}", tp.getPosition().name()));
+                                        return;
+                                    }
                                     tp.setPosition(TeamPosition.OWNER);
                             }
                         }
@@ -164,11 +245,21 @@ public class TeamCommand {
                 .assertConsole()
                 .handler(c -> {
                     if(c.args().size() > 1) {
-                        if(TeamManager.getTeam(c.rawArg(1)) == null) c.reply("Team is null");
-                        if(Bukkit.getPlayerExact(c.rawArg(2)) == null) c.reply("Player is null");
+                        if(TeamManager.getTeam(c.rawArg(1)) == null) {
+                            c.reply("Team is null");
+                            return;
+                        }
+                        if(Bukkit.getPlayerExact(c.rawArg(2)) == null) {
+                            c.reply("Player is null");
+                            return;
+                        }
                         TeamManager.getTeam(c.rawArg(1)).getMembers().add(PlayerManager.getPlayer(Bukkit.getPlayerExact(c.rawArg(2)).getUniqueId()));
                     }
                 });
+    }
+    public void register() {
+        getCommand().register(commandNames);
+        getCommand2().register("teamadmin");
     }
 
     private String help() {

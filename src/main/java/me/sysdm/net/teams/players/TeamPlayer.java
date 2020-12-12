@@ -1,27 +1,34 @@
 package me.sysdm.net.teams.players;
 
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
 import lombok.Getter;
 import me.sysdm.net.teams.*;
+import me.sysdm.net.teams.interfaces.Storeable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class TeamPlayer {
+@Entity
+public class TeamPlayer implements Storeable {
 
     @Getter
     private final Player player;
 
     @Getter
-    private final UUID UUID;
+    @Id
+    private final UUID uuid;
 
     public TeamPlayer(Player player) {
         this.player = player;
-        this.UUID = player.getUniqueId();
+        this.uuid = player.getUniqueId();
+        save(this);
     }
     public TeamPlayer(UUID playerUUID) {
         this.player = Bukkit.getPlayer(playerUUID);
-        this.UUID = player.getUniqueId();
+        this.uuid = player.getUniqueId();
+        save(this);
     }
 
     public Team getTeam() {
@@ -33,8 +40,9 @@ public class TeamPlayer {
     }
 
     public TeamPosition getPosition() {
-        if(getTeam().getOwner().getUUID() == getUUID()) return TeamPosition.OWNER;
-        else if(getTeam().getCoOwner().getUUID() == getUUID()) return TeamPosition.CO_OWNER;
+        if(getTeam() == null) return null;
+        if(getTeam().getOwner().getUuid().equals(getUuid())) return TeamPosition.OWNER;
+        else if(getTeam().getCoOwner().getUuid().equals(getUuid())) return TeamPosition.CO_OWNER;
         else return TeamPosition.MEMBER;
     }
 
@@ -77,9 +85,4 @@ public class TeamPlayer {
     public Messenger getMessenger()  {
         return TeamManager.getMessenger(this);
     }
-
-
-
-
-
 }

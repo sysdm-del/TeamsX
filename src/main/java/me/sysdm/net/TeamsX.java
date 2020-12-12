@@ -12,7 +12,7 @@ public class TeamsX extends JavaPlugin {
     public void onEnable() {
         instance = this;
         EventManager.setupEvents();
-        new TeamCommand();
+        new TeamCommand().register();
     }
 
     @Override

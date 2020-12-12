@@ -1,15 +1,19 @@
 package me.sysdm.net.teams;
 
+import dev.morphia.annotations.Converters;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
+import dev.morphia.converters.UUIDConverter;
 import lombok.Getter;
-import me.sysdm.net.lang.LangMessages;
+import me.sysdm.net.teams.interfaces.Storeable;
 import me.sysdm.net.teams.players.TeamPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-public class Messenger {
+@Entity
+public class Messenger implements Storeable {
 
     @Getter
     private final Set<String> invites = new HashSet<>();
@@ -21,12 +25,14 @@ public class Messenger {
     private final TeamPlayer player;
 
     @Getter
-    private final UUID UUID;
+    @Id
+    private final UUID uuid;
 
 
     public Messenger(TeamPlayer player) {
         this.player = player;
-        this.UUID = player.getUUID();
+        this.uuid = player.getUuid();
+        save(this);
     }
 
     public boolean hasPendingInvite() {
@@ -47,7 +53,7 @@ public class Messenger {
 
     private String requestMessage(Team team, Player requester, Messenger messenger) {
         return new TeamMessage("&a&l[!] " + requester.getName() + " wants to join you team!" + team.getTeamName() + " !" + " Click")
-                .then("&6&l[here]").command("/teams adminjoin " + team.getTeamName() + " " + messenger.getPlayer().getPlayer().getName()).then(" &a&lto accept the invite.").getFormattedMessage();
+                .then("&6&l[here]").command("/teamadmin join " + team.getTeamName() + " " + messenger.getPlayer().getPlayer().getName()).then(" &a&lto accept the invite.").getFormattedMessage();
     }
 
     private String inviteMessage(Team team, Player inviter, Messenger messenger) {
@@ -57,7 +63,7 @@ public class Messenger {
         }
         return new TeamMessage("&a&l[!] You have been invited by " + inviter.getName() + " to join their team " + team.getTeamName() + " !" + " Click")
                 .then("&6&l[here]").tooltip("&bTeam: " + team.getTeamName() + "\nOwner: " + team.getOwner().getPlayer().getName() +
-                        "\nCoOwner: " + team.getCoOwner().getPlayer().getName() + "Members: \n" + members.toString()).command("/teams adminjoin " + team.getTeamName() + " " + messenger.getPlayer().getPlayer().getName()).then(" &a&l to join").getFormattedMessage();
-
+                        "\nCoOwner: " + team.getCoOwner().getPlayer().getName() + "Members: \n" + members.toString()).command("/teamadmin join " + team.getTeamName() + " " + messenger.getPlayer().getPlayer().getName()).then(" &a&l to join").getFormattedMessage();
     }
+
 }

@@ -89,7 +89,7 @@ public class TeamMessage {
 
     public String getFormattedMessage() {
         StringBuilder sb = new StringBuilder();
-        components.forEach(component -> sb.append(component.getText()));
+        components.forEach(component -> sb.append(" ").append(component.getText()));
         return sb.toString();
     }
 

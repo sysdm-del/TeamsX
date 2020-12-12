@@ -13,11 +13,12 @@ public class TeamsX extends JavaPlugin {
         instance = this;
         EventManager.setupEvents();
         new TeamCommand().register();
+        getLogger().info("Enabled!");
     }
 
     @Override
     public void onDisable() {
-
+        getLogger().info("Disabled!");
     }
 
     public static TeamsX getInstance() {

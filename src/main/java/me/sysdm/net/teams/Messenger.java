@@ -44,11 +44,11 @@ public class Messenger implements Storeable {
     }
 
     public void sendInvite(Messenger messenger) {
-        messenger.getInvites().add(inviteMessage(player.getTeam(), player.getPlayer(), this));
+        messenger.getInvites().add(inviteMessage(player.getTeam(), player.getPlayer(), messenger));
     }
 
     public void sendRequest(Messenger messenger) {
-        messenger.getInvites().add(requestMessage(player.getTeam(), player.getPlayer(), this));
+        messenger.getInvites().add(requestMessage(player.getTeam(), player.getPlayer(), messenger));
     }
 
     private String requestMessage(Team team, Player requester, Messenger messenger) {

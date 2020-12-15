@@ -1,6 +1,6 @@
 package me.sysdm.net.events;
 
-import me.sysdm.net.teams.chat.ChatEvents;
+import me.sysdm.net.groups.chat.ChatEvents;
 
 public class EventManager {
 

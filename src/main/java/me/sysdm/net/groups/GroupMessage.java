@@ -1,37 +1,35 @@
-package me.sysdm.net.teams;
+package me.sysdm.net.groups;
 
-import me.lucko.helper.shadows.nbt.NBTTagCompound;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class TeamMessage {
+public class GroupMessage {
 
     private final List<TextComponent> components = new ArrayList<>();
 
 
-    public TeamMessage(String message) {
+    public GroupMessage(String message) {
         components.add(new TextComponent(color(message)));
     }
 
 
-    public TeamMessage suggest(String command) {
+    public GroupMessage suggest(String command) {
         this.getLatestComponent().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
         return this;
     }
 
 
-    public TeamMessage command(String command) {
+    public GroupMessage command(String command) {
         this.getLatestComponent().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
         return this;
     }
 
 
-    public TeamMessage tooltip(String... text) {
+    public GroupMessage tooltip(String... text) {
         ComponentBuilder componentBuilder = new ComponentBuilder(color(text[0]));
         int i = 0;
         if (text.length > 1) {
@@ -49,7 +47,7 @@ public class TeamMessage {
 
 
 
-    public TeamMessage tooltip(Collection<String> text) {
+    public GroupMessage tooltip(Collection<String> text) {
         ComponentBuilder componentBuilder = new ComponentBuilder(color(text.stream().findFirst().get()));
         int i = 0;
         if (text.size() > 1) {
@@ -66,14 +64,14 @@ public class TeamMessage {
 
 
 
-    public TeamMessage link(String link) {
+    public GroupMessage link(String link) {
         this.getLatestComponent().setClickEvent(new ClickEvent(net.md_5.bungee.api.chat.ClickEvent.Action.OPEN_URL, link));
         return this;
     }
 
 
 
-    public TeamMessage then(String message) {
+    public GroupMessage then(String message) {
         components.add(new TextComponent(color(message)));
         return this;
     }

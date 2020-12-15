@@ -3,8 +3,11 @@ package me.sysdm.net.events;
 import dev.morphia.annotations.Converters;
 import dev.morphia.converters.UUIDConverter;
 import me.sysdm.net.eventapi.events.Events;
-import me.sysdm.net.teams.Messenger;
-import me.sysdm.net.teams.players.PlayerManager;
+import me.sysdm.net.groups.Messenger;
+import me.sysdm.net.groups.maps.GroupMap;
+import me.sysdm.net.groups.maps.GroupPlayerMap;
+import me.sysdm.net.groups.teams.Team;
+import me.sysdm.net.groups.teams.TeamPlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -20,7 +23,9 @@ public class TeamEvents implements TabCompleter {
     public static void onJoin() {
         Events.listen(PlayerJoinEvent.class)
                 .handler(e -> {
-                    Messenger messenger = PlayerManager.getPlayer(e.getPlayer().getUniqueId()).getMessenger();
+                    GroupPlayerMap<TeamPlayer> groupPlayerMap = new GroupPlayerMap<>(TeamPlayer.class);
+                    Messenger messenger;
+                    messenger = groupPlayerMap.get(e.getPlayer()).getMessenger();
                     if(messenger.hasPendingInvite() || messenger.hasPendingRequest()) {
                         for(String invite : messenger.getInvites()) {
                             for(String request : messenger.getRequests()) {

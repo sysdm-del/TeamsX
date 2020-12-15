@@ -6,15 +6,15 @@ import com.mongodb.MongoClient;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import dev.morphia.mapping.MapperOptions;
-import me.sysdm.net.teams.Messenger;
-import me.sysdm.net.teams.Team;
-import me.sysdm.net.teams.players.TeamPlayer;
+import me.sysdm.net.groups.Messenger;
+import me.sysdm.net.groups.Group;
+import me.sysdm.net.groups.GroupPlayer;
 import me.sysdm.net.utils.ConfigUtils;
 
 public class MongoManager {
 
     private final static MongoClient client;
-    final static Morphia morphia = new Morphia().map(Team.class, TeamPlayer.class, Messenger.class);
+    final static Morphia morphia = new Morphia().map(Group.class, GroupPlayer.class, Messenger.class);
     private static final Datastore datastore;
 
     static {

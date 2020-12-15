@@ -1,7 +1,7 @@
 package me.sysdm.net;
 
 import me.sysdm.net.events.EventManager;
-import me.sysdm.net.teams.commands.TeamCommand;
+import me.sysdm.net.groups.commands.TeamCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TeamsX extends JavaPlugin {

@@ -16,9 +16,10 @@ public class MessengerMap<T extends Messenger> {
 
     private final Map<GroupPlayer, T> map = new HashMap<>();
 
+    private final Datastore datastore = MongoManager.getDatastore();
+
     public MessengerMap(Class<T> type) {
         this.type = type;
-        Datastore datastore = MongoManager.getDatastore();
         for(T messenger : datastore.createQuery(type)) {
             map.put(messenger.getGroupPlayer(), messenger);
         }
@@ -35,6 +36,8 @@ public class MessengerMap<T extends Messenger> {
         if(messenger == null) {
             messenger = type.newInstance();
             messenger.setGroupPlayer(groupPlayer);
+            map.put(groupPlayer, messenger);
+            datastore.save(messenger);
         }
         return messenger;
     }

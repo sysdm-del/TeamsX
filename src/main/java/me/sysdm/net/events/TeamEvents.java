@@ -24,8 +24,7 @@ public class TeamEvents implements TabCompleter {
         Events.listen(PlayerJoinEvent.class)
                 .handler(e -> {
                     GroupPlayerMap<TeamPlayer> groupPlayerMap = new GroupPlayerMap<>(TeamPlayer.class);
-                    Messenger messenger;
-                    messenger = groupPlayerMap.get(e.getPlayer()).getMessenger();
+                    Messenger messenger = groupPlayerMap.get(e.getPlayer()).getMessenger();
                     if(messenger.hasPendingInvite() || messenger.hasPendingRequest()) {
                         for(String invite : messenger.getInvites()) {
                             for(String request : messenger.getRequests()) {

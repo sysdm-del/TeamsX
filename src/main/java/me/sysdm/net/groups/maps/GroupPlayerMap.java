@@ -16,10 +16,11 @@ public class GroupPlayerMap<T extends GroupPlayer> {
 
     private final Map<Player, T> playerMap = new HashMap<>();
 
+    private final Datastore datastore = MongoManager.getDatastore();
+
 
     public GroupPlayerMap(Class<T> type) {
         this.type = type;
-        Datastore datastore = MongoManager.getDatastore();
         for(T player : datastore.createQuery(type)) {
             playerMap.put(player.getPlayer(), player);
         }
@@ -35,6 +36,8 @@ public class GroupPlayerMap<T extends GroupPlayer> {
         if(gp == null) {
             gp = type.newInstance();
             gp.setPlayer(player);
+            playerMap.put(player, gp);
+            datastore.save(gp);
         }
         return gp;
     }

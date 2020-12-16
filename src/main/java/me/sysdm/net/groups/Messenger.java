@@ -24,7 +24,8 @@ public interface Messenger extends Storeable {
 
     void sendInvite(Messenger messenger);
 
-    void sendRequest(Messenger messenger);
+    void sendRequest(Messenger
+                             messenger);
 
     void setGroupPlayer(GroupPlayer player);
 

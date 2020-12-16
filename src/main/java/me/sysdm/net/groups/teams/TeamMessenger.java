@@ -2,7 +2,9 @@ package me.sysdm.net.groups.teams;
 
 import com.sun.javafx.image.impl.ByteIndexed;
 import dev.morphia.annotations.Id;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import me.lucko.helper.function.Predicates;
 import me.lucko.helper.messaging.bungee.BungeeCordImpl;
@@ -18,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@NoArgsConstructor
 public class TeamMessenger implements Messenger {
 
     @Getter

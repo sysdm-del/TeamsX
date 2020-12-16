@@ -2,6 +2,7 @@ package me.sysdm.net.groups.teams;
 
 import dev.morphia.annotations.Entity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import me.sysdm.net.groups.Group;
 import me.sysdm.net.groups.Messenger;
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
 public class TeamPlayer implements GroupPlayer {
 
     @Getter
@@ -35,6 +37,7 @@ public class TeamPlayer implements GroupPlayer {
         this.UUID = player.getUniqueId();
         save(this);
     }
+
 
 
     @Override

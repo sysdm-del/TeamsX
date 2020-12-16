@@ -25,7 +25,8 @@ Maven dependency:
 The "goal" with this API is to be able to make custom groups. To make a group, make a class called for example "MyGroup" that implements Group.
 ```java
 public class MyGroup implements Group {
-}```
+}
+```
 Now, you can change all "options". Example of the `Group` class here:
 
 https://github.com/sysdm-del/TeamsX/blob/sysdm/src/main/java/me/sysdm/net/groups/teams/Team.java
